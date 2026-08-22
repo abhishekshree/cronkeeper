@@ -1,0 +1,33 @@
+name: 'jobwatch'
+description: 'Self-hosted GitHub Actions cron monitor — alerts when scheduled workflows miss or fail'
+inputs:
+  webhook:
+    description: 'Slack-compatible incoming webhook URL'
+    required: true
+  discord:
+    description: "'true' to use Discord payload format"
+    default: 'false'
+  token:
+    description: 'GitHub API token'
+    default: ${{ github.token }}
+  grace-minutes:
+    description: 'Minutes to wait past an expected fire before calling it missed'
+    default: '30'
+  lookback-hours:
+    description: 'How far back to look for expected fires'
+    default: '26'
+  on-failure:
+    description: "'true' to also alert on the latest failed run"
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: python3 "$GITHUB_ACTION_PATH/src/watch.py"
+      env:
+        INPUT_WEBHOOK: ${{ inputs.webhook }}
+        INPUT_DISCORD: ${{ inputs.discord }}
+        INPUT_TOKEN: ${{ inputs.token }}
+        INPUT_GRACE_MINUTES: ${{ inputs.grace-minutes }}
+        INPUT_LOOKBACK_HOURS: ${{ inputs.lookback-hours }}
+        INPUT_ON_FAILURE: ${{ inputs.on-failure }}
