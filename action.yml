@@ -1,5 +1,8 @@
 name: 'jobwatch'
 description: 'Self-hosted GitHub Actions cron monitor — alerts when scheduled workflows miss or fail'
+branding:
+  icon: 'bell'
+  color: 'blue'
 inputs:
   webhook:
     description: 'Slack-compatible incoming webhook URL'
