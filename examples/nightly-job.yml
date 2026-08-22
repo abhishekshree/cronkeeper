@@ -1,0 +1,12 @@
+# The job you want watched: a nightly scrape, like syncing data or running backups.
+name: Nightly Scrape
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC daily
+  workflow_dispatch:
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: ./scripts/scrape.sh

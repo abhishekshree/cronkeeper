@@ -13,7 +13,7 @@ You add one small watchdog workflow to your repo on its own cron schedule (every
 - a scheduled workflow produced no run inside its expected window, or
 - the latest run of a scheduled workflow failed.
 
-There is no server, no hosted dashboard, no account anywhere but GitHub, and nothing to edit in your existing workflows. Jobwatch figures out the schedules by reading the files itself.
+There is no server, no hosted dashboard, no account anywhere but GitHub, and nothing to edit in your existing workflows. Cronkeeper figures out the schedules by reading the files itself.
 
 ## Quick start
 
@@ -37,7 +37,29 @@ jobs:
           webhook: ${{ secrets.WEBHOOK_URL }}
 ```
 
-That is the whole setup. Jobwatch discovers every other workflow's schedule on the next run.
+That is the whole setup. Cronkeeper discovers every other workflow's schedule on the next run.
+
+## A worked example
+
+A repo runs a nightly scrape at 06:00 UTC (`examples/nightly-job.yml`) and carries the watchdog from `examples/watchdog.yml` on a `*/30` check. Three days later the scraper's API key expires. The job fails, then GitHub's scheduler skips runs entirely.
+
+Within 30 minutes of a missed window, Slack shows:
+
+```
+:rotating_light: cronkeeper MISSED run: *Nightly Scrape* (`nightly-job.yml`)
+cron `0 6 * * *` expected fire at `2026-08-22T06:00:00Z`
+(grace 30m) but no run was created.
+```
+
+This alert is real: it is exactly what cronkeeper posted during its end-to-end test, when a decoy workflow with a schedule but no runs was planted in this repository.
+
+If the job still fires but exits non-zero instead, the alert names it and links to the failed run:
+
+```
+:x: cronkeeper FAILED run: *Nightly Scrape* (`nightly-job.yml`)
+https://github.com/abhishekshree/cronkeeper/actions/runs/1234567890
+```
+
 
 ## Configuration
 
@@ -88,10 +110,10 @@ https://github.com/abhishekshree/cronkeeper/actions/runs/1234567890
 
 - No memory between runs. While something stays broken, cronkeeper re-alerts on every check until it is fixed. That nagging is intentional; silence should mean everything passed.
 - The cron matcher supports `*`, comma lists, ranges, and `*/n` steps only. Month/day names and `@syntax` are not parsed, so workflows using them are skipped.
-- On public repos, GitHub disables schedules after 60 days without activity. Jobwatch reports this as a missed schedule, but only after it has already happened.
+- On public repos, GitHub disables schedules after 60 days without activity. Cronkeeper reports this as a missed schedule, but only after it has already happened.
 - The monitored repo must be checked out first (the quick-start workflow above already does this), since cronkeeper reads its workflow files from disk.
 
-Ping-based monitors like Healthchecks.io, Cronitor, and CronSignal are good hosted products with monthly pricing, and they need a ping step edited into every job you want watched. Jobwatch trades their features for zero infrastructure and zero edits to existing workflows.
+Ping-based monitors like Healthchecks.io, Cronitor, and CronSignal are good hosted products with monthly pricing, and they need a ping step edited into every job you want watched. Cronkeeper trades their features for zero infrastructure and zero edits to existing workflows.
 
 ## License
 

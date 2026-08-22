@@ -1,0 +1,14 @@
+# The watchdog: one file, watches every scheduled workflow in this repo.
+name: CronKeeper
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # check twice an hour
+  workflow_dispatch:
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: abhishekshree/cronkeeper@v1
+        with:
+          webhook: ${{ secrets.WEBHOOK_URL }}
