@@ -31,7 +31,7 @@ jobs:
   watch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: abhishekshree/jobwatch@v1
         with:
           webhook: ${{ secrets.WEBHOOK_URL }}
