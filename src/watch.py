@@ -18,7 +18,7 @@ import yaml
 API = 'https://api.github.com'
 HEADERS = {
     'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
+    'X-GitHub-Api-Version': '2026-03-10',
 }
 
 
