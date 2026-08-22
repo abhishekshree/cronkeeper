@@ -1,4 +1,4 @@
-# Dogfood: watchcron watches its own repo's schedules on its own minutes.
+# Dogfood: cronkeeper watches its own repo's schedules on its own minutes.
 name: dogfood
 on:
   schedule:

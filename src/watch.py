@@ -1,4 +1,4 @@
-"""watchcron: alerts when scheduled GitHub Actions workflows miss or fail.
+"""cronkeeper: alerts when scheduled GitHub Actions workflows miss or fail.
 
 Stdlib + PyYAML only. Import-safe: all work happens in main().
 """
@@ -79,7 +79,7 @@ def expected_fire(
 
 
 def load_config(path: Path) -> dict[str, Any]:
-    """Parse .github/watchcron.yml; missing or malformed -> {}."""
+    """Parse .github/cronkeeper.yml; missing or malformed -> {}."""
     try:
         data = yaml.safe_load(path.read_text())
     except FileNotFoundError:
@@ -131,7 +131,7 @@ def main() -> None:
     webhook = os.environ.get('INPUT_WEBHOOK', '')
     discord = os.environ.get('INPUT_DISCORD', '').lower() == 'true'
     check_failures = os.environ.get('INPUT_ON_FAILURE', 'true').lower() == 'true'
-    config = load_config(Path('.github/watchcron.yml'))
+    config = load_config(Path('.github/cronkeeper.yml'))
     defaults = config.get('defaults', {})
     grace = int(defaults.get('grace_minutes', os.environ.get('INPUT_GRACE_MINUTES', '30')))
     lookback_hours = int(os.environ.get('INPUT_LOOKBACK_HOURS', '26'))
@@ -171,7 +171,7 @@ def main() -> None:
                 runs = api_get(url, token)
                 if runs.get('total_count', 0) == 0:
                     msg = (
-                        f':rotating_light: watchcron MISSED run: *{display}* (`{name}`)\n'
+                        f':rotating_light: cronkeeper MISSED run: *{display}* (`{name}`)\n'
                         f'cron `{cron}` expected fire at `{iso}` '
                         f'(grace {file_grace}m) but no run was created.'
                     )
@@ -184,7 +184,7 @@ def main() -> None:
                     for run in latest.get('workflow_runs', []):
                         if run.get('conclusion') == 'failure':
                             msg = (
-                                f':x: watchcron FAILED run: *{display}* (`{name}`)\n'
+                                f':x: cronkeeper FAILED run: *{display}* (`{name}`)\n'
                                 f'{run.get("html_url")}'
                             )
                             alerts.append(msg)

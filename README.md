@@ -1,4 +1,4 @@
-# watchcron
+# cronkeeper
 
 A cron monitor for GitHub Actions that runs on your own minutes and alerts a Slack-compatible webhook when a scheduled workflow skips its window or fails.
 
@@ -8,7 +8,7 @@ GitHub's scheduler silently skips and delays scheduled workflows, and it never t
 
 ## How it works
 
-You add one small watchdog workflow to your repo on its own cron schedule (every 30 minutes works well). Each run, watchcron reads the `on: schedule:` cron lines from every workflow file in the repo, checks each workflow's recent run history with your repo token, and sends an alert when:
+You add one small watchdog workflow to your repo on its own cron schedule (every 30 minutes works well). Each run, cronkeeper reads the `on: schedule:` cron lines from every workflow file in the repo, checks each workflow's recent run history with your repo token, and sends an alert when:
 
 - a scheduled workflow produced no run inside its expected window, or
 - the latest run of a scheduled workflow failed.
@@ -19,10 +19,10 @@ There is no server, no hosted dashboard, no account anywhere but GitHub, and not
 
 1. Create an incoming webhook in Slack (or any Slack-compatible service) and copy the URL.
 2. Save that URL as a repository secret named `WEBHOOK_URL`.
-3. Commit this file as `.github/workflows/watchcron.yml`:
+3. Commit this file as `.github/workflows/cronkeeper.yml`:
 
 ```yaml
-name: WatchCron
+name: CronKeeper
 on:
   schedule:
     - cron: '*/30 * * * *'
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: abhishekshree/watchcron@v1
+      - uses: abhishekshree/cronkeeper@v1
         with:
           webhook: ${{ secrets.WEBHOOK_URL }}
 ```
@@ -53,7 +53,7 @@ That is the whole setup. Jobwatch discovers every other workflow's schedule on t
 
 ### Per-workflow overrides
 
-For finer control, commit `.github/watchcron.yml` to the monitored repo. Keys are workflow filenames:
+For finer control, commit `.github/cronkeeper.yml` to the monitored repo. Keys are workflow filenames:
 
 ```yaml
 defaults:
@@ -70,7 +70,7 @@ old-migration-job.yml:
 A missed schedule:
 
 ```
-watchcron: missed schedule
+cronkeeper: missed schedule
 nightly-backup.yml expected a run near 02:00 UTC.
 No run found within 120 minutes of its window.
 Last successful run: Aug 21, 02:03 UTC
@@ -79,17 +79,17 @@ Last successful run: Aug 21, 02:03 UTC
 A failed scheduled run:
 
 ```
-watchcron: scheduled run failed
+cronkeeper: scheduled run failed
 nightly-backup.yml failed at Aug 22, 02:00 UTC.
-https://github.com/abhishekshree/watchcron/actions/runs/1234567890
+https://github.com/abhishekshree/cronkeeper/actions/runs/1234567890
 ```
 
 ## Limitations
 
-- No memory between runs. While something stays broken, watchcron re-alerts on every check until it is fixed. That nagging is intentional; silence should mean everything passed.
+- No memory between runs. While something stays broken, cronkeeper re-alerts on every check until it is fixed. That nagging is intentional; silence should mean everything passed.
 - The cron matcher supports `*`, comma lists, ranges, and `*/n` steps only. Month/day names and `@syntax` are not parsed, so workflows using them are skipped.
 - On public repos, GitHub disables schedules after 60 days without activity. Jobwatch reports this as a missed schedule, but only after it has already happened.
-- The monitored repo must be checked out first (the quick-start workflow above already does this), since watchcron reads its workflow files from disk.
+- The monitored repo must be checked out first (the quick-start workflow above already does this), since cronkeeper reads its workflow files from disk.
 
 Ping-based monitors like Healthchecks.io, Cronitor, and CronSignal are good hosted products with monthly pricing, and they need a ping step edited into every job you want watched. Jobwatch trades their features for zero infrastructure and zero edits to existing workflows.
 

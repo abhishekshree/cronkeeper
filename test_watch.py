@@ -1,4 +1,4 @@
-"""Plain-assert self-check for watchcron. Run: python3 test_watch.py (no pytest, no network)."""
+"""Plain-assert self-check for cronkeeper. Run: python3 test_watch.py (no pytest, no network)."""
 
 import sys
 import tempfile
@@ -68,7 +68,7 @@ check(
 
 # --- load_config ---
 with tempfile.TemporaryDirectory() as d:
-    cfg_path = Path(d) / 'watchcron.yml'
+    cfg_path = Path(d) / 'cronkeeper.yml'
     check('missing config -> {}', load_config(cfg_path) == {})
     cfg_path.write_text('defaults:\n  grace_minutes: 45\nscrape.yml:\n  ignore: true\nbogus_key: 1\n')
     cfg = load_config(cfg_path)

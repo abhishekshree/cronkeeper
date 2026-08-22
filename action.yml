@@ -1,4 +1,4 @@
-name: 'watchcron'
+name: 'cronkeeper'
 description: 'Cron monitoring for GitHub Actions that runs on your own minutes and alerts when scheduled jobs miss their window or fail'
 branding:
   icon: 'bell'
