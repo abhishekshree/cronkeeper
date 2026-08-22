@@ -1,0 +1,7 @@
+# Per-workflow overrides. Top-level keys other than `defaults` are workflow FILENAMES.
+defaults:
+  grace_minutes: 30
+
+# scrape.yml:
+#   ignore: true
+#   grace_minutes: 60

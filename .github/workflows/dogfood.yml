@@ -1,0 +1,14 @@
+# Dogfood: jobwatch watches its own repo's schedules on its own minutes.
+name: dogfood
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          webhook: ${{ secrets.WEBHOOK_URL }}
