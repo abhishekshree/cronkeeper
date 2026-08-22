@@ -93,4 +93,36 @@ check('grace fallback to earlier fire', f == datetime(2026, 8, 22, 11, 50, tzinf
 f = expected_fire('0 6 * * *', now, lookback_minutes=60, grace_minutes=30)
 check('no fire in window -> None', f is None)
 
+# notify(): real HTTP POST against a localhost server; asserts payload shapes
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import json as _json
+import threading
+
+import watch
+
+captured = {}
+
+class _Capture(BaseHTTPRequestHandler):
+    def do_POST(self):
+        body = self.rfile.read(int(self.headers['Content-Length']))
+        captured['body'] = _json.loads(body)
+        captured['ctype'] = self.headers['Content-Type']
+        self.send_response(200)
+        self.end_headers()
+
+    def log_message(self, *a):
+        pass
+
+_srv = HTTPServer(('127.0.0.1', 0), _Capture)
+threading.Thread(target=_srv.serve_forever, daemon=True).start()
+_url = f'http://127.0.0.1:{_srv.server_port}/hook'
+
+watch.notify(_url, 'slack msg', discord=False)
+check('slack payload text key', captured['body'] == {'text': 'slack msg'})
+check('json content-type', captured['ctype'] == 'application/json')
+
+watch.notify(_url, 'discord msg', discord=True)
+check('discord payload content key', captured['body'] == {'content': 'discord msg'})
+
+_srv.shutdown()
 print(f'All {passed} checks passed.')

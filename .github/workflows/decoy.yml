@@ -1,0 +1,11 @@
+# Temporary verification decoy: has a schedule but no runs, forces a MISSED alert.
+name: decoy
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hi
