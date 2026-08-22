@@ -1,4 +1,4 @@
-# Dogfood: jobwatch watches its own repo's schedules on its own minutes.
+# Dogfood: watchcron watches its own repo's schedules on its own minutes.
 name: dogfood
 on:
   schedule:
